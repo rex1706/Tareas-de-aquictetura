@@ -1,0 +1,130 @@
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{multirow}
+\usepackage{array}
+
+\title{Resumen de Instrucciones y Registros en MIPS}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Registros en MIPS}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Nombre} & \textbf{Número} & \textbf{Uso} & \textbf{¿Se conserva?} \\ \hline
+\verb|$zero| & 0 & Valor constante 0 & No aplica \\ \hline
+\verb|$at| & 1 & Temporal para el ensamblador & No \\ \hline
+\verb|$v0-$v1| & 2-3 & Valores de retorno de funciones & No \\ \hline
+\verb|$a0-$a3| & 4-7 & Argumentos de funciones & No \\ \hline
+\verb|$t0-$t7| & 8-15 & Temporales & No \\ \hline
+\verb|$s0-$s7| & 16-23 & Temporales almacenados & Sí \\ \hline
+\verb|$t8-$t9| & 24-25 & Temporales adicionales & No \\ \hline
+\verb|$k0-$k1| & 26-27 & Reservados para el SO & No \\ \hline
+\verb|$gp| & 28 & Puntero global & Sí \\ \hline
+\verb|$sp| & 29 & Puntero de pila & Sí \\ \hline
+\verb|$fp| & 30 & Puntero de marco & Sí \\ \hline
+\verb|$ra| & 31 & Dirección de retorno & Sí \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+    \item \verb|$zero|: Siempre contiene el valor 0.
+    \item \verb|$sp| y \verb|$fp|: Gestionan la pila.
+    \item \verb|$ra|: Almacena la dirección de retorno en llamadas a procedimientos.
+\end{itemize}
+
+\section*{Instrucciones en MIPS}
+Las instrucciones se clasifican en varios formatos: \textbf{R} (registro), \textbf{I} (inmediato), y \textbf{J} (salto)
+
+\subsection*{1. Instrucciones Aritméticas y Lógicas}
+\begin{itemize}
+    \item \textbf{Suma/Resta}:
+    \begin{itemize}
+        \item \verb|add $rd, $rs, $rt| $\rightarrow$ \verb|$rd = $rs + $rt|
+        \item \verb|sub $rd, $rs, $rt| $\rightarrow$ \verb|$rd = $rs - $rt|
+        \item \verb|addi $rt, $rs, inm| $\rightarrow$ \verb|$rt = $rs + inm| (con extensión de signo)
+    \end{itemize}
+    
+    \item \textbf{Lógicas}:
+    \begin{itemize}
+        \item \verb|and $rd, $rs, $rt| $\rightarrow$ AND bit a bit
+        \item \verb|ori $rt, $rs, inm| $\rightarrow$ OR con constante (cero extendido)
+    \end{itemize}
+\end{itemize}
+
+\subsection*{2. Transferencia de Datos}
+\begin{itemize}
+    \item \textbf{Carga/Almacenamiento}:
+    \begin{itemize}
+        \item \verb|lw $s1,100($s2)| $\rightarrow$ Carga palabra desde memoria
+        \item \verb|sw $s1,100($s2)| $\rightarrow$ Almacena palabra en memoria
+        \item \verb|lui $s1, 100| $\rightarrow$ Carga un valor inmediato en los 16 bits superiores
+    \end{itemize}
+\end{itemize}
+
+\subsection*{3. Saltos Condicionales e Incondicionales}
+\begin{itemize}
+    \item \textbf{Condicionales}:
+    \begin{itemize}
+        \item \verb|beq $rs, $rt, etiqueta| $\rightarrow$ Salta si \verb|$rs == $rt|
+        \item \verb|bne $rs, $rt, etiqueta| $\rightarrow$ Salta si \verb|$rs != $rt|
+        \item \verb|slt $rd, $rs, $rt| $\rightarrow$ \verb|$rd = 1| si \verb|$rs < $rt| (con signo)
+    \end{itemize}
+    
+    \item \textbf{Incondicionales}:
+    \begin{itemize}
+        \item \verb|j etiqueta| $\rightarrow$ Salto directo
+        \item \verb|jal etiqueta| $\rightarrow$ Salto y enlace (para llamadas a funciones)
+        \item \verb|jr $rs| $\rightarrow$ Salto a la dirección en \verb|$rs|
+    \end{itemize}
+\end{itemize}
+
+\subsection*{4. Instrucciones Especiales}
+\begin{itemize}
+    \item \textbf{División/Multiplicación}:
+    \begin{itemize}
+        \item \verb|mult $rs, $rt| $\rightarrow$ Resultado en registros \verb|Hi| y \verb|Lo|
+        \item \verb|div $rs, $rt| $\rightarrow$ Cociente en \verb|Lo|, resto en \verb|Hi|
+    \end{itemize}
+    
+    \item \textbf{Desplazamiento}:
+    \begin{itemize}
+        \item \verb|sll $rd, $rt, shamt| $\rightarrow$ Desplazamiento lógico a la izquierda
+    \end{itemize}
+\end{itemize}
+
+\section*{Formatos de Instrucción}
+\begin{enumerate}
+    \item \textbf{Tipo R}:
+    \begin{itemize}
+        \item Campos: cod oper (6) , rs (5) , rt (5) , rd (5) , desplaz (5) ,func (6)
+        \item Ejemplo: \verb|add|, \verb|sub|, \verb|and|
+    \end{itemize}
+    
+    \item \textbf{Tipo I}:
+    \begin{itemize}
+        \item Campos: cod oper (6) , rs (5) , rt (5) , inmediato (16)
+        \item Ejemplo: \verb|addi|, \verb|lw|, \verb|beq|
+    \end{itemize}
+    
+    \item \textbf{Tipo J}:
+    \begin{itemize}
+        \item Campos: cod oper (6) , dirección (26)
+        \item Ejemplo: \verb|j|, \verb|jal|
+    \end{itemize}
+\end{enumerate}
+
+\section*{Convenciones Importantes}
+\begin{itemize}
+    \item \textbf{Extensión de signo}: En instrucciones como \verb|addi|, el inmediato se extiende a 32 bits.
+    \item \textbf{Alineación}: Las palabras en memoria deben estar alineadas a direcciones múltiplos de 4.
+    \item \textbf{Pila}: Crece hacia direcciones más bajas; \verb|$sp| apunta al tope.
+\end{itemize}
+
+\end{document}
